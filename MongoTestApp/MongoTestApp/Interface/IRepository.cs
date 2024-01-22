@@ -5,7 +5,7 @@ namespace MongoTestApp.Interface;
 public interface IRepository<T> where T : IEntity
 {
     Task<T> GetByIdAsync(string id);
-    Task<IList<T>> GetAllAsync(FilterDefinition<T> filter);
+    Task<IList<T>> GetAllAsync(ProjectionDefinition<T> projection);
     Task InsertAsync(T entity);
     Task InsertManyAync(IList<T> entity);
     Task UpdateAsync(T entity);

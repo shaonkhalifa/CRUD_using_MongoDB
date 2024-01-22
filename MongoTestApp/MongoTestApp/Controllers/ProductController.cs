@@ -33,6 +33,7 @@ namespace MongoTestApp.Controllers
         [HttpPost("add-new-product")]
         public async Task<IActionResult> AddProduct(Product product)
         {
+
             await _productService.AddProduct(product);
             return Ok();
         }

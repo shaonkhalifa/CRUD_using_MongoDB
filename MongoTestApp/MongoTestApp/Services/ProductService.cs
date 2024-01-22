@@ -15,12 +15,12 @@ public class ProductService
 
     public async Task<List<Product>> GetProducts()
     {
-        var builder = Builders<Product>.Projection;
-        var pro = builder.Exclude(a => a.Id);
-
-        var data = await _repository.GetAllAsync(pro);
+        var p = Builders<Product>.Projection
+        .Exclude(a => a.Id);
+        var data = await _repository.GetAllAsync(p);
         return data.ToList();
     }
+
 
     public async Task<Product> GetProductsById(string id)
     {
@@ -30,6 +30,11 @@ public class ProductService
 
     public async Task AddProduct(Product product)
     {
+
+        product.ManufacturingDate = DateTime.Now;
+        product.ManufacturingDate = DateTime.SpecifyKind(product.ManufacturingDate, DateTimeKind.Local);
+
+
 
         await _repository.InsertAsync(product);
 
@@ -41,15 +46,20 @@ public class ProductService
 
         Product data = await _repository.GetByIdAsync(id);
 
-        var filter = Builders<Product>.Filter.Eq(x => x.Id, product.Id);
-        var update = Builders<Product>.Update.Combine(
-            product.ProductName != null ? Builders<Product>.Update.Set(a => a.ProductName, product.ProductName) : Builders<Product>.Update.Set(a => a.ProductName, data.ProductName),
-            product.Price != 0 ? Builders<Product>.Update.Set(a => a.Price, product.Price) : Builders<Product>.Update.Set(a => a.Price, data.Price),
-            product.Category != null ? Builders<Product>.Update.Set(a => a.Category, product.Category) : Builders<Product>.Update.Set(a => a.Category, data.Category),
-            product.Manufacturer != null ? Builders<Product>.Update.Set(a => a.Manufacturer, product.Manufacturer) : Builders<Product>.Update.Set(a => a.Manufacturer, data.Manufacturer)
-        );
+        var f = Builders<Product>.Filter;
+        var filter = f.Eq(x => x.Id, product.Id) & f.Eq(x => x.ProductName, product.ProductName);
 
-        await _repository.UpdateFieldAsync(filter, update);
+
+        var update = Builders<Product>.Update
+        .Set(x => x.ProductName, product.ProductName)
+        .Set(x => x.Manufacturer, product.Manufacturer)
+        .Set(x => x.Category, product.Category)
+        .Set(x => x.Price, product.Price)
+        .Set(x => x.ManufacturingDate, product.ManufacturingDate)
+        .SetOnInsert(x => x.Id, product.Id);
+
+
+        await _repository.UpdateFieldAsync(filter, update, true);
     }
 
 

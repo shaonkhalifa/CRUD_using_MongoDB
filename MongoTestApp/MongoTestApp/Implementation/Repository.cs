@@ -1,4 +1,5 @@
-﻿using MongoDB.Driver;
+﻿using MongoDB.Bson.Serialization;
+using MongoDB.Driver;
 using MongoTestApp.Interface;
 
 namespace MongoTestApp.Implementation;
@@ -19,9 +20,22 @@ public class Repository<T> : IRepository<T> where T : IEntity
         return await _collection.Find(x => x.Id == id).FirstOrDefaultAsync();
     }
 
-    public async Task<IList<T>> GetAllAsync(FilterDefinition<T> filter = null, ProjectionDefinition<T> projection = null)
+    public async Task<IList<T>> GetAllAsync(ProjectionDefinition<T> projection = null)
     {
-        return await _collection.Find(FilterDefinition<T>.Empty).ToListAsync();
+        if (projection != null)
+        {
+            var query = _collection.Find(FilterDefinition<T>.Empty).Project(projection);
+
+            var results = await query.ToListAsync();
+            var deserializedResults = results.Select(doc => BsonSerializer.Deserialize<T>(doc)).ToList();
+            return deserializedResults;
+
+        }
+        else
+        {
+            return await _collection.Find(FilterDefinition<T>.Empty).ToListAsync();
+        }
+
     }
 
     public async Task InsertAsync(T entity)
@@ -51,5 +65,6 @@ public class Repository<T> : IRepository<T> where T : IEntity
     {
         await _collection.UpdateOneAsync(filter, update, options: new UpdateOptions { IsUpsert = upsert });
     }
+
 }
 
