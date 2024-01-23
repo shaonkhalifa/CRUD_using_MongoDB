@@ -18,4 +18,7 @@ public class Product : IEntity
 
     [BsonDateTimeOptions(Kind = DateTimeKind.Local, Representation = MongoDB.Bson.BsonType.DateTime)]
     public DateTime ManufacturingDate { get; set; }
+    public string? TimeZone { get; set; }
+
+    public string? ManufacturDate { get; set; }
 }

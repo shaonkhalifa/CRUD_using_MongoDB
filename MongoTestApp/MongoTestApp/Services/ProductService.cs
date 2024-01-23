@@ -17,7 +17,11 @@ public class ProductService
     {
         var p = Builders<Product>.Projection
         .Exclude(a => a.Id);
-        var data = await _repository.GetAllAsync(p);
+
+        var s = Builders<Product>.Sort
+            .Ascending(a => a.ManufacturingDate);
+
+        var data = await _repository.GetAllAsync(null, s);
         return data.ToList();
     }
 
@@ -32,9 +36,10 @@ public class ProductService
     {
 
         product.ManufacturingDate = DateTime.Now;
-        product.ManufacturingDate = DateTime.SpecifyKind(product.ManufacturingDate, DateTimeKind.Local);
+        // product.ManufacturDate = product.ManufacturingDate.ToString("O");
+        product.TimeZone = product.ManufacturingDate.ToString("G");
 
-
+        //DateTime Test = DateTime.Parse(product.ManufacturDate);
 
         await _repository.InsertAsync(product);
 

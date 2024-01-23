@@ -20,11 +20,11 @@ public class Repository<T> : IRepository<T> where T : IEntity
         return await _collection.Find(x => x.Id == id).FirstOrDefaultAsync();
     }
 
-    public async Task<IList<T>> GetAllAsync(ProjectionDefinition<T> projection = null)
+    public async Task<IList<T>> GetAllAsync(ProjectionDefinition<T> projection = null, SortDefinition<T> sort = null)
     {
-        if (projection != null)
+        if (projection != null && sort != null)
         {
-            var query = _collection.Find(FilterDefinition<T>.Empty).Project(projection);
+            var query = _collection.Find(FilterDefinition<T>.Empty).Project(projection).Sort(sort);
 
             var results = await query.ToListAsync();
             var deserializedResults = results.Select(doc => BsonSerializer.Deserialize<T>(doc)).ToList();
