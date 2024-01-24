@@ -1,0 +1,9 @@
+version: '3.4'
+
+services:
+  mongotestapp:
+    image: ${DOCKER_REGISTRY-}mongotestapp
+    build:
+      context: .
+      dockerfile: MongoTestApp\Dockerfile
+

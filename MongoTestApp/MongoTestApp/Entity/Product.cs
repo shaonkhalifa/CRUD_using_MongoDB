@@ -1,12 +1,15 @@
-﻿using MongoDB.Bson.Serialization.Attributes;
+﻿using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
 using MongoTestApp.Interface;
 
 namespace MongoTestApp.Entity;
 
 public class Product : IEntity
 {
+
     [BsonId]
-    public string Id { get; set; } = null!;
+    [BsonRepresentation(BsonType.ObjectId)]
+    public string Id { get; set; } = ObjectId.GenerateNewId().ToString();
 
     public string? ProductName { get; set; }
 
@@ -21,4 +24,6 @@ public class Product : IEntity
     public string? TimeZone { get; set; }
 
     public string? ManufacturDate { get; set; }
+
+
 }

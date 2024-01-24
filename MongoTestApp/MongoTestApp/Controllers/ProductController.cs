@@ -22,6 +22,13 @@ namespace MongoTestApp.Controllers
             return Ok(data);
         }
 
+        [HttpGet("get-date-products")]
+        public async Task<IActionResult> DateFilter(string startDate, string endDate)
+        {
+            var data = await _productService.DateFilter(startDate, endDate);
+            return Ok(data);
+        }
+
 
         [HttpGet("get-single-product")]
         public async Task<IActionResult> GetProductById(string id)

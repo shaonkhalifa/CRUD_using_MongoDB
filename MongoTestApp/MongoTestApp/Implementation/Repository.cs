@@ -66,5 +66,24 @@ public class Repository<T> : IRepository<T> where T : IEntity
         await _collection.UpdateOneAsync(filter, update, options: new UpdateOptions { IsUpsert = upsert });
     }
 
+    public async Task<IList<T>> DateFilter(FilterDefinition<T> filter = null)
+    {
+        var query = _collection.Find(filter);
+        return await query.ToListAsync();
+
+    }
+
+    public async Task<IList<TOutput>> JoinData<TOutput>(PipelineDefinition<T, TOutput> pipeline)
+    {
+        var query = await _collection.AggregateAsync(pipeline);
+        return await query.ToListAsync();
+    }
+
+
+
+
+
+
+
 }
 
