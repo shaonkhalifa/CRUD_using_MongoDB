@@ -3,7 +3,7 @@ using MongoTestApp.Interface;
 
 namespace MongoTestApp.Entity;
 
-public class CourseDetailsL : IEntity
+public class CourseDetails : IEntity
 {
     [BsonId]
     [BsonElement("_id")]

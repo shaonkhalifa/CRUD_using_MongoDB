@@ -1,12 +1,13 @@
 ﻿using MongoDB.Bson.Serialization.Attributes;
+using MongoTestApp.Interface;
 
 namespace MongoTestApp.Entity;
 
-public class Course
+public class Course:IEntity
 {
     [BsonId]
     [BsonElement("_id")]
-    public int Id { get; set; }
+    public string Id { get; set; } = null!;
     [BsonElement("name")]
     public string CourseName { get; set; } = null!;
     [BsonElement("subjects")]
