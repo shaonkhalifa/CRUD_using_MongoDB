@@ -16,15 +16,29 @@ public class CourseService
 
     public async Task<List<CourseDetails>> GetCourseDetails()
     {
-        var lookupStage = new BsonDocument("$lookup", new BsonDocument
-                {
-                    { "from", "subject" },
-                    { "localField", "subjects" },
-                    { "foreignField", "_id" },
-                    { "as", "subjectsDetails" }
-                });
 
-        var projectStage = new BsonDocument("$project", new BsonDocument
+
+
+
+        BsonDocument lookupStage = new BsonDocument("$lookup", new BsonDocument
+                        {
+                            { "from", "subject" },
+                            { "localField", "subjects" },
+                            { "foreignField", "_id" },
+                            { "as", "subjectsDetails" }
+                        });
+
+        //BsonDocument lookupStage = new BsonDocument("$lookup", new BsonDocument
+        //            {
+        //                { "from", "Subject" },
+        //                { "localField", "Subjects" },
+        //                { "foreignField", "Id" },
+        //                { "as", "subjectsDetails" }
+        //            });
+
+
+
+        BsonDocument projectStage = new BsonDocument("$project", new BsonDocument
                 {
                     { "_id", 1 },
                     { "name", 1 },
@@ -37,14 +51,22 @@ public class CourseService
                     }
                 });
 
+
+
+
         var pipeline = PipelineDefinition<Course, CourseDetails>.Create(
-            new IPipelineStageDefinition[]
-            {
-                 new BsonDocumentPipelineStageDefinition<Course, CourseDetails>(lookupStage),
-                 new BsonDocumentPipelineStageDefinition<Course, CourseDetails>(projectStage)
-            }
-        );
+                             new IPipelineStageDefinition[]
+                             {
+                                 new BsonDocumentPipelineStageDefinition<Course, CourseDetails>(lookupStage),
+                                 new BsonDocumentPipelineStageDefinition<CourseDetails, CourseDetails>(projectStage)
+                             });
+
         var data = await _repository.JoinData<CourseDetails>(pipeline);
+
         return data.ToList();
+
+
     }
+
+
 }

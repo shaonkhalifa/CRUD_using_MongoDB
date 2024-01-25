@@ -15,7 +15,11 @@ builder.Services.AddSingleton<IMongoClient>(sp => new MongoClient(connectionStri
 var databaseName = builder.Configuration.GetValue<string>("MongoDB:DatabaseName");
 builder.Services.AddScoped<IRepository<Product>, Repository<Product>>(sp =>
     new Repository<Product>(sp.GetRequiredService<IMongoClient>(), databaseName));
+builder.Services.AddScoped<IRepository<Course>, Repository<Course>>(sp =>
+    new Repository<Course>(sp.GetRequiredService<IMongoClient>(), databaseName));
+
 builder.Services.AddScoped<ProductService>();
+builder.Services.AddScoped<CourseService>();
 
 
 builder.Services.AddControllers();

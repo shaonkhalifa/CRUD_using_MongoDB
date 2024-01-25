@@ -4,7 +4,7 @@ using MongoTestApp.Interface;
 
 namespace MongoTestApp.Implementation;
 
-public class Repository<T> : IRepository<T> where T : IEntity
+public class Repository<T> : IRepository<T> where T : class
 {
     private readonly IMongoCollection<T> _collection;
 
@@ -17,7 +17,7 @@ public class Repository<T> : IRepository<T> where T : IEntity
 
     public async Task<T> GetByIdAsync(string id)
     {
-        return await _collection.Find(x => x.Id == id).FirstOrDefaultAsync();
+        return await _collection.Find(Builders<T>.Filter.Eq("_id", id)).FirstOrDefaultAsync();
     }
 
     public async Task<IList<T>> GetAllAsync(ProjectionDefinition<T> projection = null, SortDefinition<T> sort = null)
@@ -43,9 +43,9 @@ public class Repository<T> : IRepository<T> where T : IEntity
         await _collection.InsertOneAsync(entity);
     }
 
-    public async Task UpdateAsync(T entity)
+    public async Task UpdateAsync(FilterDefinition<T> filter, T entity)
     {
-        await _collection.ReplaceOneAsync(x => x.Id == entity.Id, entity);
+        await _collection.ReplaceOneAsync(filter, entity);
     }
 
 
@@ -53,7 +53,7 @@ public class Repository<T> : IRepository<T> where T : IEntity
 
     public async Task DeleteAsync(string id)
     {
-        await _collection.DeleteOneAsync(x => x.Id == id);
+        await _collection.DeleteOneAsync(Builders<T>.Filter.Eq("_id", id));
     }
 
     public async Task InsertManyAync(IList<T> entity)

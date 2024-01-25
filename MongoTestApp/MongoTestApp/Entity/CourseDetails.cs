@@ -1,16 +1,18 @@
 ﻿using MongoDB.Bson.Serialization.Attributes;
-using MongoTestApp.Interface;
 
 namespace MongoTestApp.Entity;
 
-public class CourseDetails : IEntity
+public class CourseDetails
 {
     [BsonId]
     [BsonElement("_id")]
-    public string Id { get; set; } = null!;
+    public int _id { get; set; }
     [BsonElement("name")]
-    public string CourseName { get; set; } = null!;
-    [BsonElement("subjects")]
-    public string[]? Subjects { get; set; }
+    public string name { get; set; } = null!;
+    [BsonElement("subjectsDetails")]
+    public string[]? subjectsDetails { get; set; }
+    [BsonIgnore]
+    public virtual ICollection<Subject>? Subjects { get; set; }
 
 }
+

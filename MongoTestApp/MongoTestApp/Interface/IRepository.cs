@@ -2,7 +2,7 @@
 
 namespace MongoTestApp.Interface;
 
-public interface IRepository<T> where T : IEntity
+public interface IRepository<T> where T : class
 {
     Task<T> GetByIdAsync(string id);
     Task<IList<T>> GetAllAsync(ProjectionDefinition<T> projection, SortDefinition<T> sort);
@@ -10,7 +10,7 @@ public interface IRepository<T> where T : IEntity
     Task<IList<TOutput>> JoinData<TOutput>(PipelineDefinition<T, TOutput> pipeline);
     Task InsertAsync(T entity);
     Task InsertManyAync(IList<T> entity);
-    Task UpdateAsync(T entity);
+    Task UpdateAsync(FilterDefinition<T> filter, T entity);
     Task UpdateFieldAsync(FilterDefinition<T> filter, UpdateDefinition<T> update, bool upsert = false);
     Task DeleteAsync(string id);
 }

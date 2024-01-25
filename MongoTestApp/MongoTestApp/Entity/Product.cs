@@ -1,10 +1,9 @@
 ﻿using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
-using MongoTestApp.Interface;
 
 namespace MongoTestApp.Entity;
 
-public class Product : IEntity
+public class Product
 {
 
     [BsonId]
