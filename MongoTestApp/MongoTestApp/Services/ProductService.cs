@@ -25,6 +25,19 @@ public class ProductService
         var data = await _repository.GetAllAsync(null, s);
         return data.ToList();
     }
+    public async Task<Pager<Product>> GetProductWithPaging(string keyword, int page, int pagesize)
+    {
+
+        var f = Builders<Product>.Filter;
+        var filterDefination = keyword != null ? f.Eq(x => x.Category, keyword) : f.Empty;
+
+        var sortingDefination = Builders<Product>.Sort
+            .Ascending(a => a.ManufacturingDate);
+
+        var data = await _repository.GetdatawithPaging<Product>(filterDefination, sortingDefination, page, pagesize);
+        return data;
+    }
+
 
     public async Task<List<Product>> DateFilter(string startDate, string endDate)
     {

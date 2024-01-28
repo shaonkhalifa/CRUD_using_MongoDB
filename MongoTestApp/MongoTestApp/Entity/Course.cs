@@ -10,7 +10,8 @@ public class Course
     [BsonElement("name")]
     public string name { get; set; } = null!;
     [BsonElement("subjects")]
-    public int[]? subjects { get; set; }
-    [BsonIgnore]
-    public virtual ICollection<Subject>? Subjects { get; set; }
+    public List<int> Subjects { get; set; }
+    //public Subject[]? subjects { get; set; }
+    //[BsonIgnore]
+    //public ICollection<Subject>? subject { get; set; } = new HashSet<Subject>();
 }

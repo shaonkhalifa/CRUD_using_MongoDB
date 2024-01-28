@@ -22,6 +22,16 @@ namespace MongoTestApp.Controllers
             return Ok(data);
         }
 
+        [HttpGet("get-products")]
+        public async Task<IActionResult> GetProductWithFiltering(string? kyeword)
+        {
+
+            int page = 2;
+            int pagesize = 5;
+            var data = await _productService.GetProductWithPaging(kyeword, page, pagesize);
+            return Ok(data);
+        }
+
         [HttpGet("get-date-products")]
         public async Task<IActionResult> DateFilter(string startDate, string endDate)
         {

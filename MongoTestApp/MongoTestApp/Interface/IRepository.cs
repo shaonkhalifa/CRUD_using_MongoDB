@@ -1,17 +1,21 @@
-﻿using MongoDB.Driver;
+﻿using MongoDB.Bson;
+using MongoDB.Driver;
+using MongoTestApp.Entity;
 
 namespace MongoTestApp.Interface;
 
-public interface IRepository<T> where T : class
+public interface IRepository<TDocument> where TDocument : class
 {
-    Task<T> GetByIdAsync(string id);
-    Task<IList<T>> GetAllAsync(ProjectionDefinition<T> projection, SortDefinition<T> sort);
-    Task<IList<T>> DateFilter(FilterDefinition<T> filter);
-    Task<IList<TOutput>> JoinData<TOutput>(PipelineDefinition<T, TOutput> pipeline);
-    Task InsertAsync(T entity);
-    Task InsertManyAync(IList<T> entity);
-    Task UpdateAsync(FilterDefinition<T> filter, T entity);
-    Task UpdateFieldAsync(FilterDefinition<T> filter, UpdateDefinition<T> update, bool upsert = false);
+    Task<TDocument> GetByIdAsync(string id);
+    Task<Pager<TDocument>> GetdatawithPaging<T>(FilterDefinition<TDocument> filter, SortDefinition<TDocument> sort, int page, int pagesize);
+    Task<IList<TDocument>> GetAllAsync(ProjectionDefinition<TDocument> projection, SortDefinition<TDocument> sort);
+    Task<IList<TDocument>> DateFilter(FilterDefinition<TDocument> filter);
+    Task<IList<TOutput>> JoinData<TOutput>(PipelineDefinition<TDocument, TOutput> pipeline);
+    Task InsertAsync(TDocument entity);
+    Task InsertManyAync(IList<TDocument> entity);
+    Task UpdateAsync(FilterDefinition<TDocument> filter, TDocument entity);
+    Task UpdateFieldAsync(FilterDefinition<TDocument> filter, UpdateDefinition<TDocument> update, bool upsert = false);
+    Task<IList<TOutput>> ExecutePipeline<TOutput>(BsonDocument[] stages);
     Task DeleteAsync(string id);
 }
 public interface IEntity
