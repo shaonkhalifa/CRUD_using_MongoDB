@@ -14,74 +14,66 @@ public class CourseService
     {
         _repository = repository;
         _repository1 = repository1;
+
     }
 
-    public async Task<List<CourseDetails>> GetCourseDetails1()
+    public async Task<List<CourseDetails>> GetCourseDetails()
     {
 
-
-
-
-        //BsonDocument lookupStage = new BsonDocument("$lookup", new BsonDocument
-        //                {
-        //                    { "from", "subject" },
-        //                    { "localField", "subjects" },
-        //                    { "foreignField", "_id" },
-        //                    { "as", "subjectsDetails" }
-        //                });
-
-        ////BsonDocument lookupStage = new BsonDocument("$lookup", new BsonDocument
-        ////            {
-        ////                { "from", "Subject" },
-        ////                { "localField", "Subjects" },
-        ////                { "foreignField", "Id" },
-        ////                { "as", "subjectsDetails" }
-        ////            });
-
-
-
-        //BsonDocument projectStage = new BsonDocument("$project", new BsonDocument
-        //        {
-        //            { "_id", 1 },
-        //            { "name", 1 },
-        //            { "subjectsDetails", new BsonDocument("$map", new BsonDocument
-        //                {
-        //                    { "input", "$subjectsDetails" },
-        //                    { "as", "subject" },
-        //                    { "in", "$$subject.name" }
-        //                })
-        //            }
-        //        });
+        BsonDocument lookupStage = new BsonDocument("$lookup", new BsonDocument
+        {
+            {"from", "Subject"},
+            {"localField", "SubjectList"},
+            {"foreignField", "_id"},
+            {"as", "SubjectDetails"}
+        });
 
 
 
 
-        //var pipeline = PipelineDefinition<Course, CourseDetails>.Create(
-        //                     new IPipelineStageDefinition[]
-        //                     {
-        //                         new BsonDocumentPipelineStageDefinition<Course, CourseDetails>(lookupStage),
-        //                         new BsonDocumentPipelineStageDefinition<CourseDetails, CourseDetails>(projectStage)
-        //                     });
+        BsonDocument projectStage = new BsonDocument("$project", new BsonDocument
+        {
+                {"_id", 1},
+                {"CourseName", 1},
+                {"SubjectDetails", new BsonDocument("$map", new BsonDocument
+                {
+                    {"input", "$SubjectDetails"},
+                    {"as", "subject"},
+                    {"in", "$$subject.SubjectName"}
+                })}
+        });
 
-        var pipeline = new BsonDocument[]
+
+
+
+        var pipeline = PipelineDefinition<Course, CourseDetails>.Create(
+                             new IPipelineStageDefinition[]
+                             {
+                                 new BsonDocumentPipelineStageDefinition<Course, CourseDetails>(lookupStage),
+                                 new BsonDocumentPipelineStageDefinition<CourseDetails, CourseDetails>(projectStage)
+                             });
+
+
+        //Different Way......Sending Pipeline
+        var pipelinea = new BsonDocument[]
                 {
                     new BsonDocument("$lookup", new BsonDocument
                     {
-                        {"from", "subject"},
-                        {"localField", "subjects"},
+                        {"from", "Subject"},
+                        {"localField", "SubjectList"},
                         {"foreignField", "_id"},
-                        {"as", "subjectsDetails"}
+                        {"as", "SubjectDetails"}
                     }),
 
                     new BsonDocument("$project", new BsonDocument
                     {
                         {"_id", 1},
-                        {"name", 1},
-                        {"subjectsDetails", new BsonDocument("$map", new BsonDocument
+                        {"CourseName", 1},
+                        {"SubjectDetails", new BsonDocument("$map", new BsonDocument
                         {
-                            {"input", "$subjectsDetails"},
+                            {"input", "$SubjectDetails"},
                             {"as", "subject"},
-                            {"in", "$$subject.name"}
+                            {"in", "$$subject.SubjectName"}
                         })}
                     })
                 };
@@ -95,30 +87,35 @@ public class CourseService
 
     }
 
-    public async Task<List<CourseDetails>> GetCourseDetails()
+    public async Task<List<CourseDetails>> GetCourseDetails1()
     {
+
         var pipeline = new BsonDocument[]
                 {
                     new BsonDocument("$lookup", new BsonDocument
                     {
-                        {"from", "subject"},
-                        {"localField", "subjects"},
+                        {"from", "Subject"},
+                        {"localField", "SubjectList"},
                         {"foreignField", "_id"},
-                        {"as", "subjectsDetails"}
+                        {"as", "SubjectDetails"}
                     }),
 
-                    //new BsonDocument("$project", new BsonDocument
-                    //{
-                    //    {"_id", 1},
-                    //    {"name", 1},
-                    //    {"subjectsDetails", new BsonDocument("$map", new BsonDocument
-                    //    {
-                    //        {"input", "$subjectsDetails"},
-                    //        {"as", "subject"},
-                    //        {"in", "$$subject.name"}
-                    //    })}
-                    //})
+                    new BsonDocument("$project", new BsonDocument
+                    {
+                        {"_id", 1},
+                        {"CourseName", 1},
+                        {"SubjectDetails", new BsonDocument("$map", new BsonDocument
+                        {
+                            {"input", "$SubjectDetails"},
+                            {"as", "subject"},
+                            {"in", "$$subject.SubjectName"}
+                        })}
+                    })
                 };
+
+
+
+
 
         var data = await _repository.ExecutePipeline<CourseDetails>(pipeline);
 
@@ -130,3 +127,5 @@ public class CourseService
 
 
 }
+
+

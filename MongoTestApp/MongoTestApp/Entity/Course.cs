@@ -1,4 +1,5 @@
-﻿using MongoDB.Bson.Serialization.Attributes;
+﻿using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
 
 namespace MongoTestApp.Entity;
 
@@ -6,12 +7,10 @@ public class Course
 {
     [BsonId]
     [BsonElement("_id")]
-    public int _id { get; set; }
-    [BsonElement("name")]
-    public string name { get; set; } = null!;
-    [BsonElement("subjects")]
-    public List<int> Subjects { get; set; }
-    //public Subject[]? subjects { get; set; }
-    //[BsonIgnore]
-    //public ICollection<Subject>? subject { get; set; } = new HashSet<Subject>();
+    public int Id { get; set; }
+    [BsonElement("CourseName")]
+    public string CourseName { get; set; } = null!;
+    [BsonElement("SubjectList")]
+    public int[] SubjectList { get; set; }
+
 }

@@ -92,7 +92,6 @@ public class Repository<TDocument> : IRepository<TDocument> where TDocument : cl
     }
 
 
-
     public async Task<Pager<TDocument>> GetdatawithPaging<T>(FilterDefinition<TDocument> filter, SortDefinition<TDocument> sort, int page, int pagesize)
     {
         page = page != 0 ? page : 1;
@@ -100,7 +99,7 @@ public class Repository<TDocument> : IRepository<TDocument> where TDocument : cl
 
         var countFact = AggregateFacet.Create("count", PipelineDefinition<TDocument, AggregateCountResult>.Create(new[]
         {
-            PipelineStageDefinitionBuilder.Count<TDocument>(),
+          PipelineStageDefinitionBuilder.Count<TDocument>()
         }));
 
         var dataFact = AggregateFacet.Create("data", PipelineDefinition<TDocument, TDocument>.Create(new[]
@@ -111,14 +110,17 @@ public class Repository<TDocument> : IRepository<TDocument> where TDocument : cl
 
         }));
 
-        var aggregation = await _collection.Aggregate().Match(filter).Facet(countFact, dataFact).ToListAsync();
-
+        List<AggregateFacetResults> aggregation = await _collection.Aggregate().Match(filter).Facet(countFact, dataFact).ToListAsync();
+        var documents = aggregation.First();
         var count = aggregation.First().Facets.First(x => x.Name == "count").Output<AggregateCountResult>()?.FirstOrDefault()?.Count;
 
 
         var totalPage = (int)Math.Ceiling((double)count / pagesize);
 
+
         var data = aggregation.First().Facets.First(x => x.Name == "data").Output<TDocument>();
+
+        var d = aggregation.First().Facets.First();
         return new Pager<TDocument>
         {
             Count = (int)count,

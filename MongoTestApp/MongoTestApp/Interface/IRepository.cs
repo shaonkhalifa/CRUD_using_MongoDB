@@ -18,7 +18,4 @@ public interface IRepository<TDocument> where TDocument : class
     Task<IList<TOutput>> ExecutePipeline<TOutput>(BsonDocument[] stages);
     Task DeleteAsync(string id);
 }
-public interface IEntity
-{
-    string Id { get; set; }
-}
+

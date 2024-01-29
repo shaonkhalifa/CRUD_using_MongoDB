@@ -17,6 +17,8 @@ builder.Services.AddScoped<IRepository<Product>, Repository<Product>>(sp =>
     new Repository<Product>(sp.GetRequiredService<IMongoClient>(), databaseName));
 builder.Services.AddScoped<IRepository<Course>, Repository<Course>>(sp =>
     new Repository<Course>(sp.GetRequiredService<IMongoClient>(), databaseName));
+builder.Services.AddScoped<IRepository<Subject>, Repository<Subject>>(sp =>
+    new Repository<Subject>(sp.GetRequiredService<IMongoClient>(), databaseName));
 
 builder.Services.AddScoped<ProductService>();
 builder.Services.AddScoped<CourseService>();
