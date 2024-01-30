@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using MongoTestApp.Entity;
 using MongoTestApp.Services;
 
 namespace MongoTestApp.Controllers;
@@ -19,5 +20,13 @@ public class CourseController : ControllerBase
     {
         var data = await _courseService.GetCourseDetails();
         return Ok(data);
+    }
+
+    [HttpPost("add-new-data")]
+    public async Task<IActionResult> InsertData(CourseSubjectInserDto dto)
+    {
+
+        await _courseService.DataInsert(dto);
+        return Ok();
     }
 }

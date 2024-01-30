@@ -1,6 +1,7 @@
 ﻿using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
 using MongoDB.Driver;
+using MongoTestApp.Custom;
 using MongoTestApp.Entity;
 using MongoTestApp.Interface;
 
@@ -9,11 +10,13 @@ namespace MongoTestApp.Implementation;
 public class Repository<TDocument> : IRepository<TDocument> where TDocument : class
 {
     private readonly IMongoCollection<TDocument> _collection;
+    private readonly IMongoClient _client;
 
     public Repository(IMongoClient client, string databaseName)
     {
 
         _collection = client.GetDatabase(databaseName).GetCollection<TDocument>(typeof(TDocument).Name);
+        _client = client;
     }
 
 
@@ -24,6 +27,13 @@ public class Repository<TDocument> : IRepository<TDocument> where TDocument : cl
 
     public async Task<IList<TDocument>> GetAllAsync(ProjectionDefinition<TDocument> projection = null, SortDefinition<TDocument> sort = null)
     {
+
+        var sumStage = CustomPipelineStageDefinitionBuilder.CustomSum<TDocument>();
+        var pipeline = PipelineDefinition<Product, decimal>.Create(new[]
+        {
+          PipelineStageDefinitionBuilder.Count<TDocument>()
+        });
+
         if (projection != null && sort != null)
         {
             var query = _collection.Find(FilterDefinition<TDocument>.Empty).Project(projection).Sort(sort);
@@ -39,6 +49,7 @@ public class Repository<TDocument> : IRepository<TDocument> where TDocument : cl
         }
 
     }
+
 
     public async Task InsertAsync(TDocument entity)
     {
@@ -106,7 +117,8 @@ public class Repository<TDocument> : IRepository<TDocument> where TDocument : cl
         {
             PipelineStageDefinitionBuilder.Sort(sort),
             PipelineStageDefinitionBuilder.Skip<TDocument>((page-1)*pagesize),
-            PipelineStageDefinitionBuilder.Limit<TDocument>(pagesize)
+            PipelineStageDefinitionBuilder.Limit<TDocument>(pagesize),
+
 
         }));
 
@@ -134,6 +146,51 @@ public class Repository<TDocument> : IRepository<TDocument> where TDocument : cl
 
     }
 
+    public async Task<decimal> GetSumResult(string fieldName = null)
+    {
+        //var collection = _database.GetCollection<TDocument>(collectionName);
 
+        if (fieldName != null)
+        {
+            var sumStage = CustomPipelineStageDefinitionBuilder.CustomSum<TDocument>(fieldName);
+
+            // Create the aggregation pipeline with the custom sum stage
+            var pipeline = PipelineDefinition<TDocument, AggregateSumResult>.Create(new IPipelineStageDefinition[]
+            {
+            sumStage
+            });
+
+            // Execute the aggregation pipeline
+            var result = await _collection.AggregateAsync(pipeline);
+
+            // Access the result
+            decimal sumValue = result.FirstOrDefault()?.Sum ?? 0;
+            return sumValue;
+        }
+        else
+        {
+            return 0;
+        }
+    }
+
+    public async Task RunTransactionAsync(Func<IClientSessionHandle, Task> transactionFunc)
+    {
+        using (var session = await _client.StartSessionAsync())
+        {
+            session.StartTransaction();
+
+            try
+            {
+                await transactionFunc(session);
+
+                session.CommitTransaction();
+            }
+            catch (Exception)
+            {
+                session.AbortTransaction();
+                throw;
+            }
+        }
+    }
 }
 

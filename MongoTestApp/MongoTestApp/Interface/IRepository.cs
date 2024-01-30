@@ -17,5 +17,7 @@ public interface IRepository<TDocument> where TDocument : class
     Task UpdateFieldAsync(FilterDefinition<TDocument> filter, UpdateDefinition<TDocument> update, bool upsert = false);
     Task<IList<TOutput>> ExecutePipeline<TOutput>(BsonDocument[] stages);
     Task DeleteAsync(string id);
+    Task<decimal> GetSumResult(string fieldName = null);
+    Task RunTransactionAsync(Func<IClientSessionHandle, Task> transactionFunc);
 }
 

@@ -1,9 +1,10 @@
 ﻿using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
+using MongoTestApp.Interface;
 
 namespace MongoTestApp.Entity;
 
-public class Product
+public class Product : IMessage
 {
 
     [BsonId]
@@ -23,6 +24,5 @@ public class Product
     public string? TimeZone { get; set; }
 
     public string? ManufacturDate { get; set; }
-
 
 }

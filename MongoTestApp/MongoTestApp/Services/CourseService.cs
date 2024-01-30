@@ -125,6 +125,31 @@ public class CourseService
 
     }
 
+    public async Task DataInsert(CourseSubjectInserDto data)
+    {
+
+        Course course = new Course()
+        {
+            Id = data.CourseId,
+            CourseName = data.CourseName,
+            SubjectList = data.SubjectList,
+        };
+
+        Subject subject = new Subject()
+        {
+            Id = data.SubjectId,
+            name = data.name,
+        };
+
+
+        await _repository.RunTransactionAsync(async (session) =>
+        {
+            await _repository.InsertAsync(course);
+            await _repository1.InsertAsync(subject);
+        });
+
+    }
+
 
 }
 

@@ -7,8 +7,6 @@ using MongoTestApp.Services;
 var builder = WebApplication.CreateBuilder(args);
 
 
-
-
 var connectionString = builder.Configuration.GetValue<string>("MongoDB:ConnectionString");
 builder.Services.AddSingleton<IMongoClient>(sp => new MongoClient(connectionString));
 
@@ -19,9 +17,17 @@ builder.Services.AddScoped<IRepository<Course>, Repository<Course>>(sp =>
     new Repository<Course>(sp.GetRequiredService<IMongoClient>(), databaseName));
 builder.Services.AddScoped<IRepository<Subject>, Repository<Subject>>(sp =>
     new Repository<Subject>(sp.GetRequiredService<IMongoClient>(), databaseName));
-
 builder.Services.AddScoped<ProductService>();
 builder.Services.AddScoped<CourseService>();
+builder.Services.AddHostedService<RabbitMQService<Product>>();
+//builder.Services.AddRabbitMQ(configuration =>
+//{
+//    configuration.HostName = "your_rabbitmq_hostname";
+//    // Configure other RabbitMQ settings as needed
+//});
+
+
+
 
 
 builder.Services.AddControllers();

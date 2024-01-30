@@ -32,6 +32,13 @@ namespace MongoTestApp.Controllers
             return Ok(data);
         }
 
+        [HttpGet("get-sum")]
+        public async Task<IActionResult> GetSum(string? kyeword)
+        {
+            var data = await _productService.GetSumResult(kyeword);
+            return Ok(data);
+        }
+
         [HttpGet("get-date-products")]
         public async Task<IActionResult> DateFilter(string startDate, string endDate)
         {

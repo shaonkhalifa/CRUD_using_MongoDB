@@ -11,11 +11,11 @@ public class ProductService
     public ProductService(IRepository<Product> repository)
     {
         _repository = repository;
+
     }
 
     public async Task<List<Product>> GetProducts()
     {
-
         var p = Builders<Product>.Projection
         .Exclude(a => a.Id);
 
@@ -24,6 +24,12 @@ public class ProductService
 
         var data = await _repository.GetAllAsync(null, s);
         return data.ToList();
+    }
+
+
+    public async Task<decimal> GetSumResult(string field)
+    {
+        return await _repository.GetSumResult(field);
     }
     public async Task<Pager<Product>> GetProductWithPaging(string keyword, int page, int pagesize)
     {
